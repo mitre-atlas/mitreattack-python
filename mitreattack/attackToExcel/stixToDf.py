@@ -247,13 +247,7 @@ def techniquesToDf(src, domain):
     dataframes = {
         "techniques": pd.DataFrame(technique_rows).sort_values("name"),
     }
-    # add relationships
-    codex = relationshipsToDf(src, relatedType="technique")
-    if len(codex) > 0:
-        dataframes.update(codex)
-        # add relationship references
-        dataframes["techniques"]["relationship citations"] = _get_relationship_citations(dataframes["techniques"], codex)
-
+    
     # add/merge citations
     if not citations.empty:
         if "citations" in dataframes:  # append to existing citations from references
@@ -541,6 +535,7 @@ def campaignsToDf(src):
     return dataframes
 
 
+
 def mitigationsToDf(src):
     """Parse STIX mitigations from the given data and return corresponding pandas dataframes.
 
@@ -812,6 +807,7 @@ def matricesToDf(src, domain):
                 matrix_grid_handle=matrix_grid,
                 tactic_name=tactic["name"],
             )
+
             if domain in MATRIX_PLATFORMS_LOOKUP:
                 for platform in MATRIX_PLATFORMS_LOOKUP[domain]:
                     # In order to support "groups" of platforms, each platform is checked against the lookup a second time.
@@ -881,9 +877,6 @@ def relationshipsToDf(src, relatedType=None):
     attackToStixTerm = {
         "technique": ["attack-pattern"],
         "tactic": ["x-mitre-tactic"],
-        "software": ["tool", "malware"],
-        "group": ["intrusion-set"],
-        "campaign": ["campaign"],
         "mitigation": ["course-of-action"],
         "matrix": ["x-mitre-matrix"],
         "datasource": ["x-mitre-data-component"],

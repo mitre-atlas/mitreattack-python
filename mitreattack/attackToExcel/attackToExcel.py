@@ -98,12 +98,8 @@ def build_dataframes(src: MemoryStore, domain: str) -> Dict:
     df = {
         "techniques": stixToDf.techniquesToDf(src, domain),
         "tactics": stixToDf.tacticsToDf(src),
-        "software": stixToDf.softwareToDf(src),
-        "groups": stixToDf.groupsToDf(src),
-        "campaigns": stixToDf.campaignsToDf(src),
         "mitigations": stixToDf.mitigationsToDf(src),
         "matrices": stixToDf.matricesToDf(src, domain),
-        "relationships": stixToDf.relationshipsToDf(src),
     }
     # get each ATT&CK type
     if domain in ["enterprise-attack", "ics-attack"]:
@@ -146,8 +142,6 @@ def write_excel(dataframes: Dict, domain: str, version: str = None, output_dir: 
     # master dataset file
     master_fp = os.path.join(output_directory, f"{domain_version_string}.xlsx")
     with pd.ExcelWriter(master_fp, engine="xlsxwriter") as master_writer:
-        # master list of citations
-        citations = pd.DataFrame()
 
         # write individual dataframes and add to master writer
         for object_type, object_data in dataframes.items():
@@ -162,12 +156,8 @@ def write_excel(dataframes: Dict, domain: str, version: str = None, output_dir: 
                 with pd.ExcelWriter(fp) as object_writer:
                     for sheet_name in object_data:
                         logger.debug(f"Writing sheet to {fp}: {sheet_name}")
-                        object_data[sheet_name].to_excel(object_writer, sheet_name=sheet_name, index=False)
+                        (object_data[sheet_name]).to_excel(object_writer, sheet_name=sheet_name, index=False)
                 written_files.append(fp)
-
-                # add citations to master citations list
-                if "citations" in object_data:
-                    citations = pd.concat([citations, object_data["citations"]])
 
                 # add main df to master dataset
                 logger.debug(f"Writing sheet to {master_fp}: {object_type}")
@@ -249,12 +239,6 @@ def write_excel(dataframes: Dict, domain: str, version: str = None, output_dir: 
 
                 written_files.append(fp)
 
-        # remove duplicate citations and add sheet to master file
-        logger.debug(f"Writing sheet to {master_fp}: citations")
-        citations.drop_duplicates(subset="reference", ignore_index=True).sort_values("reference").to_excel(
-            master_writer, sheet_name="citations", index=False
-        )
-
     written_files.append(master_fp)
     for thefile in written_files:
         logger.info(f"Excel file created: {thefile}")
@@ -262,7 +246,7 @@ def write_excel(dataframes: Dict, domain: str, version: str = None, output_dir: 
 
 
 def export(
-    domain: str = "enterprise-attack",
+    domain: str = "custom",
     version: str = None,
     output_dir: str = ".",
     remote: str = None,
@@ -341,7 +325,6 @@ def main():
         help="Path to a local STIX file containing ATT&CK data for a domain, by default None",
     )
     args = parser.parse_args()
-
     export(
         domain=args.domain, version=args.version, output_dir=args.output, remote=args.remote, stix_file=args.stix_file
     )
