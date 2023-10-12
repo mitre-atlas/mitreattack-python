@@ -295,7 +295,7 @@ def main():
     parser.add_argument(
         "-domain",
         type=str,
-        default="custom",
+        default="enterprise-attack"
         help="which domain of ATT&CK to convert",
     )
     parser.add_argument(
