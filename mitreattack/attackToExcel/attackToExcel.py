@@ -98,6 +98,7 @@ def build_dataframes(src: MemoryStore, domain: str) -> Dict:
     df = {
         "techniques": stixToDf.techniquesToDf(src, domain),
         "tactics": stixToDf.tacticsToDf(src),
+        "mitigations": stixToDf.mitigationsToDf(src),
         "matrices": stixToDf.matricesToDf(src, domain),
     }
     # get each ATT&CK type
@@ -295,7 +296,7 @@ def main():
     parser.add_argument(
         "-domain",
         type=str,
-        default="enterprise-attack"
+        default="enterprise-attack",
         help="which domain of ATT&CK to convert",
     )
     parser.add_argument(
