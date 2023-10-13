@@ -11,8 +11,6 @@ from loguru import logger
 from stix2 import Filter, MemoryStore
 from tqdm import tqdm
 
-from mitreattack.constants import MITRE_ATTACK_ID_SOURCE_NAMES
-
 
 # Lookup module for Platforms - each matrix has a list of possible platforms, and each platform with multiple
 #   subplatforms has a corresponding entry. This allows for a pseudo-recursive lookup of subplatforms, as the presence
